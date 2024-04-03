@@ -1,2 +1,2 @@
 # Cardealership
-Car dealship
+Car dealership functions and other stuffs
