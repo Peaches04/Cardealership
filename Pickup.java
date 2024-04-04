@@ -9,6 +9,7 @@ public class Pickup extends Car {
 
     public void displayDetails() {
     	//in progress
+    	//new commnet
     }
 
     public float getTowingCapacity() {
@@ -17,5 +18,6 @@ public class Pickup extends Car {
 
     public void setTowingCapacity(float towingCapacity) {
         this.towingCapacity = towingCapacity;
+        
     }
 }
