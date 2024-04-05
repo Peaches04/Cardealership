@@ -1,4 +1,3 @@
-ID,Car Type,Model,Condition,Color,Capacity,Mileage,Fuel Type,Transmission,VIN,Price,Cars Available
 1,Hatchback,Honda Fit,New,Yellow,5,3055,Hybrid,Automatic,YNA6L2L65Z33P6C4O,23471.55,3
 2,Sedan,Toyota Camry,New,Silver,5,3067,Diesel,Automatic,61J7MKYN8AUG05XV3,20688.35,5
 3,SUV,Toyota RAV4,New,Green,5,2903,Gasoline,Automatic,FVCRJHUHZCEX8LCDC,33050.65,7
@@ -57,9 +56,9 @@ ID,Car Type,Model,Condition,Color,Capacity,Mileage,Fuel Type,Transmission,VIN,Pr
 56,Pickup,Toyota Tacoma,New,White,5,4207,Hybrid,Automatic,4URQ8Q0Q36IVO0C59,48685.85,9
 57,Hatchback,Volkswagen Golf,New,Blue,5,349,Electric,Manual,WRCCI30JQ4WFXRGPV,26171.87,5
 58,Hatchback,Volkswagen Golf,Used,White,5,63104,Gasoline,Automatic,6T4C75GBOTF2NK613,27960.65,4
-59,SUV,Chevrolet Tahoe,Used,Yellow,8,14064,Diesel,Manual,H2KP8DSAYXIDWTJET,17293.0,8
+59,SUV,Chevrolet Tahoe,Used,Yellow,8,14064,Diesel,Manual,H2KP8DSAYXIDWTJET,17293,8
 60,Sedan,Honda Accord,New,Black,5,2829,Gasoline,Manual,N4RSGSA65S118D0GV,42187.35,6
-61,SUV,Ford Explorer,New,Silver,7,3976,Hybrid,Manual,MRM4TRR6DKYFI7ZGK,42992.0,5
+61,SUV,Ford Explorer,New,Silver,7,3976,Hybrid,Manual,MRM4TRR6DKYFI7ZGK,42992,5
 62,SUV,Ford Explorer,New,Silver,7,1597,Electric,Automatic,PM980KEEIVE7BJVZF,33249.68,5
 63,Sedan,Honda Accord,New,Yellow,5,434,Diesel,Manual,SFSUA679JJMN1ZZA5,40635.1,8
 64,Hatchback,Volkswagen Golf,Used,Yellow,5,44367,Diesel,Manual,BA8J8392BXDNN6R3D,27940.4,3
