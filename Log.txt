@@ -4,3 +4,6 @@
 15:01:19 04/05/24 - neo purchased a car
 15:01:21 04/05/24 - neo failed to purchase a car
 15:01:27 04/05/24 - neo signed out
+15:10:06 04/05/24 - neo logged in
+15:10:09 04/05/24 - neo printed all cars
+15:10:23 04/05/24 - neo viewed tickets
