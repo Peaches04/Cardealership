@@ -6,7 +6,7 @@ public class CSVManager {
 
 
     public static void writeToCSV(String filePath, List<String[]> data) {
-        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(new File(filePath), true))) {
             for (String[] rowData : data) {
                 writer.println(String.join(",", rowData));
             }
@@ -16,7 +16,9 @@ public class CSVManager {
     }
 
     public static List<String[]> readFromCSV(String filePath) {
+    	
         List<String[]> data = new ArrayList<>();
+        
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {

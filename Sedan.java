@@ -1,26 +1,26 @@
 public class Sedan extends Car {
-    private float trunkSpace; 
+	  private float trunkSpace; 
 
+	    public Sedan(int id, String type, String model, String condition, String color, int capacity,
+	                 float mileage, String fuelType, String transmission, String vin, float price, 
+	                 int carsAvailable, float trunkSpace) {
+	        super(id, type, model, condition, color, capacity, mileage, fuelType, transmission, vin, price, carsAvailable);
+	        this.trunkSpace = trunkSpace; 
+	    }
 
-    public Sedan(String model, float price, float mileage, float trunkSpace) {
-        super(model, price, mileage); 
-        this.trunkSpace = trunkSpace; 
-    }
+	    @Override
+	    public void displayDetails() {
+	        super.displayDetails(); // Call to the superclass method to display common details
+	        System.out.println("Trunk Space: " + trunkSpace + " cubic feet"); // Additional detail specific to Sedans
+	    }
 
+	    // Getters and setters for the trunkSpace field
 
-    public void displayDetails() {
-        System.out.println("Sedan Details:");
-        System.out.println("Model: " + model);
-        System.out.println("Price: $" + price);
-        System.out.println("Mileage: " + mileage + " MPG");
-        System.out.println("Trunk Space: " + trunkSpace + " cubic feet");
-    }
+	    public float getTrunkSpace() {
+	        return trunkSpace;
+	    }
 
-    public float getTrunkSpace() {
-        return trunkSpace;
-    }
-
-    public void setTrunkSpace(float trunkSpace) {
-        this.trunkSpace = trunkSpace;
-    }
+	    public void setTrunkSpace(float trunkSpace) {
+	        this.trunkSpace = trunkSpace;
+	    }
 }
