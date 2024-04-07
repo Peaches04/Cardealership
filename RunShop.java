@@ -11,7 +11,9 @@ import java.time.Year;
  */
 public class RunShop {
     
-    private static List<String[]> users = CSVManager.readFromCSV("user_data.csv");
+	
+	//private static List<String[]> users = CSVManager.readFromCSV("user_data.csv");
+    private static List<User> users = loadAllUsers.loadUsersFromCSV();
     private static List<Car> cars = loadAllCars.loadCarsFromCSV();
     private static String[] tempToken = null;
     
@@ -64,10 +66,17 @@ public class RunShop {
      * @param users A list of user data loaded from a CSV file.
      * @return true if the user is found and credentials match; false otherwise.
      */
-    private static boolean checkUserLogin(String username, String password, List<String[]> users) {
-        for (String[] user : users) {
-            if (user[6].equals(username) && user[7].equals(password)) {
-                tempToken = user;
+    private static boolean checkUserLogin(String username, String password, List<User> users) {
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+            	tempToken = new String[]{String.valueOf(user.getID()), 
+                        user.getFirstName(), 
+                        user.getLastName(), 
+                        String.valueOf(user.getMoneyAvailable()), 
+                        String.valueOf(user.getCarsPurchased()), 
+                        String.valueOf(user.isMinerCarsMembership()), 
+                        user.getUsername(), 
+                        user.getPassword()};
                 return true;
             }
         }
@@ -113,12 +122,29 @@ public class RunShop {
             return false;
         }
         
-        float userFunds = Float.parseFloat(tempToken[3]);
+        User currentUser = null;
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                currentUser = user;
+                break;
+            }
+        }
+        
+        if (currentUser == null) {
+            System.out.println("User not found.");
+            return false;
+        }
+        
+        float userFunds = currentUser.getMoneyAvailable();
+        
         
         for (Car car : cars) {
             if (Integer.parseInt(ID) == car.getId()) {
                 if (userFunds >= car.getPrice()) {
-                    if(car.getCarsAvailable() > 0) {
+                    if (car.getCarsAvailable() > 0) {
+                        // Deduct car price from user's funds
+                        currentUser.setMoneyAvailable(userFunds - car.getPrice());
+                        
                         IssueTicket ticket = new IssueTicket(ID, username, car.getType(), car.getModel(), Year.now().getValue(), car.getColor());
                         issuedTickets.add(ticket);
                         ticket.getDetails();
@@ -126,12 +152,20 @@ public class RunShop {
                         List<String[]> dataToWrite = new ArrayList<>();
                         dataToWrite.add(ticket.CSVparser());
                         car.setCarsAvailable(car.getCarsAvailable() - 1);
+                        currentUser.setCarsPurchased(currentUser.getCarsPurchased()+1);
                         
                         CSVManager.writeToCSV("issued_tickets.csv", dataToWrite);
+                        
+                       
+                        
                         return true; 
                     } else {
+                        System.out.println("No cars available.");
                         return false;
                     }
+                } else {
+                    System.out.println("Insufficient funds.");
+                    return false;
                 }
             }
         }
@@ -225,12 +259,30 @@ public class RunShop {
                 
             case "5":
                 System.out.println("Signed out");
-                List<String[]> carDataToWrite = new ArrayList<>();
+                
+                List<String[]> carDataWrite = new ArrayList<>();
+                
+                carDataWrite.add(loadAllCars.header);
+                
                 for (Car car : cars) {
                     String[] carData = car.ArrayListToCSV();
-                    carDataToWrite.add(carData);
+                    carDataWrite.add(carData);
                 }
-                CSVManager.updateCSV("car_data.csv", carDataToWrite);
+                
+                
+                CSVManager.updateCSV("car_data.csv", carDataWrite);
+                
+                
+                List<String[]> userDataWrite = new ArrayList<>();
+                userDataWrite.add(loadAllUsers.header);
+                
+                for (User user : users) {
+                    String[] userData = user.ArrayListToCSV();
+                    userDataWrite.add(userData);
+                }
+                
+                CSVManager.updateCSV("user_data.csv", userDataWrite);
+                
                 Log.log(username, "signed out");
                 break;
                 
