@@ -1,7 +1,6 @@
-import java.util.List;
+
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.time.Year;
+
 
 /**
  * The {@code RunShop} class implements a simple console-based car shop application.
@@ -12,13 +11,27 @@ import java.time.Year;
 public class RunShop {
     
 	
-	//private static List<String[]> users = CSVManager.readFromCSV("user_data.csv");
-    private static List<User> users = loadAllUsers.loadUsersFromCSV();
-    private static List<Car> cars = loadAllCars.loadCarsFromCSV();
-    private static String[] tempToken = null;
+	/**
+	 * Manages all car-related operations including loading cars, processing car purchases, and managing inventory.
+	 * This instance of {@link CarManager} is used throughout the application to interface with car data.
+	 */
+    private static CarManager carManager = new CarManager();
     
-    private static List<IssueTicket> issuedTickets = new ArrayList<>();
+    /**
+     * Manages user-related operations, user authentication and user data management.
+     * This instance of {@link UserManager} is initialized with a reference to {@code carManager} to allow
+     * user operations that may affect car data, such as car purchases.
+     */
+    private static UserManager userManager = new UserManager(carManager);
     
+    /**
+     * Represents an administrator who can perform administrative actions such as adding or removing cars or users.
+     * This instance of {@link Admin} may be initialized as needed to perform administrative tasks within the application.
+     */
+    private static Admin admin;
+
+ 
+
     /**
      * The main method to run the car shop application. It handles user login and redirects
      * to the main menu upon successful authentication.
@@ -36,9 +49,11 @@ public class RunShop {
             System.out.print("Password: ");
             String password = scanner.nextLine();
     
-            if (checkUserLogin(username, password, users)) {
+            if (userManager.authenticateUser(username, password)) {
                 System.out.println("Welcome " + username);
                 Log.log(username, "logged in");
+               
+                
                 mainmenu(username);
                 break;
             } else {
@@ -58,119 +73,28 @@ public class RunShop {
         scanner.close();
     }
     
+ 
     /**
-     * Checks if the provided username and password match a user in the system.
-     * 
-     * @param username The username of the user trying to log in.
-     * @param password The password of the user trying to log in.
-     * @param users A list of user data loaded from a CSV file.
-     * @return true if the user is found and credentials match; false otherwise.
+     * Retrieves boolean input from the user in response to a specific prompt. This method ensures that
+     * the input is correctly parsed to a boolean by accepting only 'yes' or 'no' answers.
+     *
+     * @param scanner The scanner object to read the user's input.
+     * @param prompt The prompt to display to the user, asking for a 'yes' or 'no' response.
+     * @return The boolean value corresponding to the user's input ('yes' returns true, 'no' returns false).
      */
-    private static boolean checkUserLogin(String username, String password, List<User> users) {
-        for (User user : users) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-            	tempToken = new String[]{String.valueOf(user.getID()), 
-                        user.getFirstName(), 
-                        user.getLastName(), 
-                        String.valueOf(user.getMoneyAvailable()), 
-                        String.valueOf(user.getCarsPurchased()), 
-                        String.valueOf(user.isMinerCarsMembership()), 
-                        user.getUsername(), 
-                        user.getPassword()};
+    private static boolean getBooleanInput(Scanner scanner, String prompt) {
+        String input;
+        while (true) {
+            System.out.println(prompt);
+            input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("yes")) {
                 return true;
+            } else if (input.equals("no")) {
+                return false;
+            } else {
+                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
             }
         }
-        return false;
-    }
-    
-    /**
-     * Prints details of all cars available in the shop.
-     */
-    private static void printAllCars() {
-        for (Car car : cars) {
-            car.displayDetails();
-            System.out.println(); 
-        }
-    }
-    
-    /**
-     * Prints details of cars filtered by their condition (new or used).
-     * 
-     * @param usedornew The condition of the cars to display. Should be either "New" or "Used".
-     */
-    public static void printConditionCars(String usedornew) {
-        for (Car car : cars) {
-            if (usedornew.equals(car.getCondition())) {
-                car.displayDetails();
-                System.out.println(); // Adds an empty line between car details for readability
-            }
-        }
-    }
-    
-    /**
-     * Attempts to purchase a car with the given ID for the currently logged-in user. If the user has enough funds
-     * and there is enough cars available, the car is purchased. Then it issues a ticket for the customer and saves it in the 
-     * issue_tickets.csv file. 
-     * 
-     * @param username The username of the buyer.
-     * @param ID The ID of the car to purchase.
-     * @return true if the purchase is successful; false otherwise.
-     */
-    public static boolean purchaseCar(String username, String ID) {
-        if (tempToken == null) {
-            System.out.println("No user is currently logged in.");
-            return false;
-        }
-        
-        User currentUser = null;
-        for (User user : users) {
-            if (user.getUsername().equals(username)) {
-                currentUser = user;
-                break;
-            }
-        }
-        
-        if (currentUser == null) {
-            System.out.println("User not found.");
-            return false;
-        }
-        
-        float userFunds = currentUser.getMoneyAvailable();
-        
-        
-        for (Car car : cars) {
-            if (Integer.parseInt(ID) == car.getId()) {
-                if (userFunds >= car.getPrice()) {
-                    if (car.getCarsAvailable() > 0) {
-                        // Deduct car price from user's funds
-                        currentUser.setMoneyAvailable(userFunds - car.getPrice());
-                        
-                        IssueTicket ticket = new IssueTicket(ID, username, car.getType(), car.getModel(), Year.now().getValue(), car.getColor());
-                        issuedTickets.add(ticket);
-                        ticket.getDetails();
-                        
-                        List<String[]> dataToWrite = new ArrayList<>();
-                        dataToWrite.add(ticket.CSVparser());
-                        car.setCarsAvailable(car.getCarsAvailable() - 1);
-                        currentUser.setCarsPurchased(currentUser.getCarsPurchased()+1);
-                        
-                        CSVManager.writeToCSV("issued_tickets.csv", dataToWrite);
-                        
-                       
-                        
-                        return true; 
-                    } else {
-                        System.out.println("No cars available.");
-                        return false;
-                    }
-                } else {
-                    System.out.println("Insufficient funds.");
-                    return false;
-                }
-            }
-        }
-        
-        return false;
     }
     
     /**
@@ -192,14 +116,20 @@ public class RunShop {
                 + "    3) Go back\n"
                 + "3. Purchase a car\n"
                 + "4. View Tickets\n"
-                + "5. Sign out and Exit");
+                + "5. Sign out and Exit\n"
+                + "6. Return Car\n"
+                + "7. Admin Panel");
 
         String input = scanner.nextLine();
 
+        try {
         switch (input) {
+        
+        
+        
             case "1":
                 System.out.println("Displaying all cars...");
-                printAllCars();
+                carManager.printAllCars();
                 Log.log(username, "printed all cars");
                 mainmenu(username);
                 break;
@@ -212,14 +142,14 @@ public class RunShop {
                 switch (filterInput) {
                     case "1":
                         System.out.println("New Cars:");
-                        printConditionCars("New");
+                        carManager.printConditionCars("New");
                         Log.log(username, "printed new cars");
                         mainmenu(username);
                         break;
                         
                     case "2":
                         System.out.println("Used Cars:");
-                        printConditionCars("Used");
+                        carManager.printConditionCars("Used");
                         Log.log(username, "printed used cars");
                         mainmenu(username);
                         break;
@@ -239,7 +169,7 @@ public class RunShop {
             case "3":
                 System.out.println("Enter ID of car: ");
                 String IDInput = scanner.nextLine();
-                if(purchaseCar(username, IDInput)) {
+                if(carManager.purchaseCar(username, IDInput, userManager)) {
                     System.out.println("Car Purchased. Thank you for your business!");
                     Log.log(username, "purchased a car");
                 }
@@ -258,40 +188,158 @@ public class RunShop {
                 break;
                 
             case "5":
-                System.out.println("Signed out");
-                
-                List<String[]> carDataWrite = new ArrayList<>();
-                
-                carDataWrite.add(loadAllCars.header);
-                
-                for (Car car : cars) {
-                    String[] carData = car.ArrayListToCSV();
-                    carDataWrite.add(carData);
-                }
+
+            	
+                carManager.saveCarsToCSV();
                 
                 
-                CSVManager.updateCSV("car_data.csv", carDataWrite);
+                
+                userManager.saveUsersToCSV();  
                 
                 
-                List<String[]> userDataWrite = new ArrayList<>();
-                userDataWrite.add(loadAllUsers.header);
-                
-                for (User user : users) {
-                    String[] userData = user.ArrayListToCSV();
-                    userDataWrite.add(userData);
-                }
-                
-                CSVManager.updateCSV("user_data.csv", userDataWrite);
+                userManager.logout();
                 
                 Log.log(username, "signed out");
+                
+                userManager.clearTempToken();
+                
                 break;
+            case "6":
+            	
+            	System.out.println("Enter Car ID to return: ");
+            	int carID = scanner.nextInt();
+            	
+            	userManager.returnCar(username, carID);
+            	mainmenu(username);
+            	break;
+            	
+            case "7":
+            	AdminPanel(username);
                 
             default:
                 System.out.println("Invalid option. Please try again.");
                 mainmenu(username);
+                
                 break;
         }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter valid numeric values.");
+            mainmenu(username);
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+            mainmenu(username);
+        }
+        
 
         scanner.close(); 
+    }
+    
+    
+    /**
+     * Displays and manages the Admin Panel, allowing admin-level operations such as adding or removing cars,
+     * adding users, and getting revenue. 
+     * 
+     * @param username The username of the administrator.
+     */
+    private static void AdminPanel(String username) {
+    	
+    	admin = new Admin("admin", "admin", carManager, userManager);
+
+        System.out.println("Accessing Admin Panel...");
+        System.out.println("Select admin option: \n"
+        		+ "1. Add Car\n"
+        		+ "2. Get Revenue by Id and by Car Type \n"
+        		+ "3. Remove Car\n"
+        		+ "4. Add User\n"
+        		+ "Main Menu");
+        
+        Scanner scanner = new Scanner(System.in);
+        
+        String input = scanner.nextLine();
+        
+        try {
+        switch (input) {
+        case "1":
+            System.out.println("Enter Car Type:");
+            String type = scanner.nextLine();
+            System.out.println("Enter Model:");
+            String model = scanner.nextLine();
+            System.out.println("Enter Condition (new/used):");
+            String condition = scanner.nextLine();
+            System.out.println("Enter Color:");
+            String color = scanner.nextLine();
+            System.out.println("Enter Capacity:");
+            int capacity = Integer.parseInt(scanner.nextLine());
+            System.out.println("Enter Year:");
+            int year = Integer.parseInt(scanner.nextLine());
+            System.out.println("Enter Fuel Type:");
+            String fuelType = scanner.nextLine();
+            System.out.println("Enter Transmission:");
+            String transmission = scanner.nextLine();
+            System.out.println("Enter VIN:");
+            String vin = scanner.nextLine();
+            System.out.println("Enter Price:");
+            int price = Integer.parseInt(scanner.nextLine());
+            System.out.println("Enter Cars Available:");
+            int carsAvailable = Integer.parseInt(scanner.nextLine());
+            boolean hasTurbo = getBooleanInput(scanner, "Has Turbo (yes/no):");
+            admin.addCar(type, model, condition, color, capacity, year, fuelType, transmission, vin, price, carsAvailable, hasTurbo);
+            AdminPanel(username);
+            break;
+
+        case "2":
+            System.out.println("Enter Car Type or ID:");
+            String identifier = scanner.nextLine();
+            admin.getRevenueByIDOrType(identifier);
+            AdminPanel(username);
+            break;
+
+        case "3":
+            System.out.println("Enter the VIN of the car you wish to remove:");
+            String removeVin = scanner.nextLine();
+            admin.removeCar(removeVin);
+            AdminPanel(username);
+            break;
+
+        case "4":
+            System.out.println("Enter User ID:");
+            int id = Integer.parseInt(scanner.nextLine());
+            System.out.println("Enter First Name:");
+            String firstName = scanner.nextLine();
+            System.out.println("Enter Last Name:");
+            String lastName = scanner.nextLine();
+            System.out.println("Enter Money Available:");
+            float moneyAvailable = Float.parseFloat(scanner.nextLine());
+            System.out.println("Enter Cars Purchased:");
+            int carsPurchased = Integer.parseInt(scanner.nextLine());
+            System.out.println("Enter MinerCars Membership (true/false):");
+            System.out.println("Note: any input other than true will be false");
+            boolean minerCarsMembership = Boolean.parseBoolean(scanner.nextLine());
+            System.out.println("Enter Username:");
+            String username_two = scanner.nextLine();
+            System.out.println("Enter Password:");
+            String password = scanner.nextLine();
+            admin.addUser(id, firstName, lastName, moneyAvailable, carsPurchased, minerCarsMembership, username_two, password);
+            System.out.println("User added successfully.");
+            AdminPanel(username);
+            break;
+        case "5":
+        	
+        	mainmenu(username);
+        	break;
+
+        default:
+            System.out.println("Invalid option. Please try again.");
+            AdminPanel(username);
+            break;
+        }       
+        }catch (NumberFormatException e) {
+            System.out.println("Please enter valid numeric values.");
+            AdminPanel(username);
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+            AdminPanel(username);
+        }
+   
     }
 }

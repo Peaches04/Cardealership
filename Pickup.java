@@ -1,32 +1,30 @@
 /**
  * Represents a Pickup truck, extending the Car class with additional towing capacity parameter.
- * 
  */
 public class Pickup extends Car {
-    private float towingCapacity; 
 
     /**
-     * Constructs a new Pickup instance with specified details, including the towing capacity.
-     * 
+     * Constructs a new Pickup instance with specified details, including towing capacity.
+     * Additional parameters for the year and turbocharger presence are included.
+     *
      * @param id The unique identifier.
-     * @param type The type of the car.
+     * @param type The type of the car (e.g., Pickup).
      * @param model The model of the car.
-     * @param condition The condition of the car .
+     * @param condition The condition of the car (e.g., New, Used).
      * @param color The color of the car.
      * @param capacity The seating capacity of the car.
-     * @param mileage The mileage of the car.
-     * @param fuelType The type of fuel the car uses.
-     * @param transmission The transmission type of the car.
-     * @param vin The Vehicle Identification Number.
      * @param price The price of the car.
+     * @param transmission The transmission type of the car (e.g., Automatic, Manual).
+     * @param vin The Vehicle Identification Number.
+     * @param fuelType The type of fuel the car uses (e.g., Gasoline, Electric).
+     * @param year The model year of the car.
      * @param carsAvailable The number of cars available for this model.
-     * @param towingCapacity The towing capacity of the Pickup in pounds or kilograms.
+     * @param hasTurbo Indicates whether the car is equipped with a turbocharger.
      */
     public Pickup(int id, String type, String model, String condition, String color, int capacity,
-                  float mileage, String fuelType, String transmission, String vin, float price, 
-                  int carsAvailable, float towingCapacity) {
-        super(id, type, model, condition, color, capacity, mileage, fuelType, transmission, vin, price, carsAvailable);
-        this.towingCapacity = towingCapacity; 
+                  float price, String transmission, String vin, String fuelType, int year, 
+                  int carsAvailable, boolean hasTurbo) {
+        super(id, type, model, condition, color, capacity, price, transmission, vin, fuelType, year, carsAvailable, hasTurbo);
     }
 
     /**
@@ -34,25 +32,17 @@ public class Pickup extends Car {
      */
     @Override
     public void displayDetails() {
-        super.displayDetails(); // Call to the superclass method to display common details
-        System.out.println("Towing Capacity: " + towingCapacity + " lbs/kg (depending on unit)"); // Additional detail specific to Pickup trucks
-    }
+        super.displayDetails(); 
 
-    /**
-     * Gets the towing capacity of the Pickup.
-     * 
-     * @return The towing capacity in pounds or kilograms.
-     */
-    public float getTowingCapacity() {
-        return towingCapacity;
     }
-
+    
     /**
-     * Sets the towing capacity of the Pickup.
-     * 
-     * @param towingCapacity The towing capacity in pounds.
+     * Converts the Pickup truck's data into an array format suitable for CSV storage.
+     *
+     * @return A string array containing the Pickup truck's attributes formatted for CSV.
      */
-    public void setTowingCapacity(float towingCapacity) {
-        this.towingCapacity = towingCapacity;
+    @Override
+    public String[] ArrayListToCSV() {
+        return super.ArrayListToCSV();
     }
 }
