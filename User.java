@@ -1,16 +1,52 @@
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents a user in the car shop application.
  */
-public class User {
+public class User extends Person implements ICSVSerializable {
     // User attributes
-    private int ID;
-    private String firstName;
-    private String lastName;
-    private float moneyAvailable;
-    private int carsPurchased;
-    private boolean minerCarsMembership;
-    private String username;
-    private String password;
+	/**
+	 * The unique identifier for the user. 
+	 */
+	private int ID;
+
+	/**
+	 * The first name of the user.
+	 */
+	private String firstName;
+
+	/**
+	 * The last name of the user.
+	 */
+	private String lastName;
+
+	/**
+	 * The amount of money the user has available. 
+	 */
+	private float moneyAvailable;
+
+	/**
+	 * The total number of cars purchased by the user. This count helps in tracking user
+	 * activity.
+	 */
+	private int carsPurchased;
+
+	/**
+	 * Indicates whether the user has a membership in the MinerCars program. This membership
+	 * offers benefits as discounts
+	 */
+	private boolean minerCarsMembership;
+
+	/**
+	 * The username used by the user to log into the application.
+	 */
+	private String username;
+
+	/**
+	 * The password used for user authentication.
+	 */
+	private String password;
 
     /**
      * Constructs a new User with the specified details.
@@ -25,7 +61,8 @@ public class User {
      * @param password The user's login password.
      */
     public User(int ID, String firstName, String lastName, float moneyAvailable, int carsPurchased, boolean minerCarsMembership, String username, String password) {
-        this.ID = ID;
+    	super(firstName, lastName);
+    	this.ID = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.moneyAvailable = moneyAvailable;
@@ -41,16 +78,24 @@ public class User {
      * @return A String array representing the user's information.
      */
     public String[] ArrayListToCSV() {
-        return new String[]{
-            String.valueOf(ID),
-            firstName,
-            lastName,
-            String.format("%.2f", moneyAvailable),
-            String.valueOf(carsPurchased),
-            String.valueOf(minerCarsMembership),
-            username,
-            password
-        };
+        // Map the values to their respective headers
+        Map<String, String> userValues = new HashMap<>();
+        userValues.put("ID", String.valueOf(ID));
+        userValues.put("First Name", firstName);
+        userValues.put("Last Name", lastName);
+        userValues.put("Money Available", String.format("%.2f", moneyAvailable));
+        userValues.put("Cars Purchased", String.valueOf(carsPurchased));
+        userValues.put("MinerCars Membership", String.valueOf(minerCarsMembership));
+        userValues.put("Username", username);
+        userValues.put("Password", password);
+
+        // Create an array matching the order of the header
+        String[] csvValues = new String[loadAllUsers.header.length];
+        for (int i = 0; i < loadAllUsers.header.length; i++) {
+            csvValues[i] = userValues.getOrDefault(loadAllUsers.header[i], "");
+        }
+
+        return csvValues;
     }
 
     /**

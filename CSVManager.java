@@ -8,6 +8,7 @@ import java.util.List;
  */
 public class CSVManager {
 
+
     /**
      * Writes a list of string arrays to a CSV file at the specified path. Appends the data
      * to the file if it already exists.
