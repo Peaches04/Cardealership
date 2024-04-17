@@ -190,13 +190,8 @@ public class RunShop {
             case "5":
 
             	
-                carManager.saveCarsToCSV();
-                
-                
-                
-                userManager.saveUsersToCSV();  
-                
-                
+                carManager.saveCarsToCSV();           
+                userManager.saveUsersToCSV();                 
                 userManager.logout();
                 
                 Log.log(username, "signed out");
@@ -251,7 +246,7 @@ public class RunShop {
         		+ "2. Get Revenue by Id and by Car Type \n"
         		+ "3. Remove Car\n"
         		+ "4. Add User\n"
-        		+ "Main Menu");
+        		+ "5. Main Menu");
         
         Scanner scanner = new Scanner(System.in);
         
