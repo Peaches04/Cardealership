@@ -310,3 +310,12 @@
 14:16:56 04/17/24 - neo viewed tickets
 14:17:28 04/17/24 - neo viewed tickets
 14:17:31 04/17/24 - neo viewed tickets
+19:27:38 04/17/24 - neo logged in
+19:31:09 04/17/24 - neo logged in
+19:36:38 04/17/24 - neo logged in
+19:36:51 04/17/24 - neo purchased a car
+19:37:29 04/17/24 - neo logged in
+19:37:40 04/17/24 - neo failed to purchase a car
+19:37:54 04/17/24 - neo failed to purchase a car
+20:05:36 04/17/24 - neo logged in
+20:11:47 04/17/24 - neo logged in
